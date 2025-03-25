@@ -55,7 +55,27 @@ function toggleThemeListener() {
   window.dispatchEvent(new CustomEvent('toggle-theme'));
 }
 
+// this function is used to toggle the language dropdown
+function toggleLangDropdown(event) {
+    event.stopPropagation();
+    const dropdown = event.currentTarget.nextElementSibling;
+    const isOpen = dropdown.classList.contains('show');
+    // close all other dropdowns
+    document.querySelectorAll('.lang-dropdown.show').forEach(item => {
+        item.classList.remove('show');
+    });
+    // toggle the current dropdown
+    dropdown.classList.toggle('show', !isOpen);
+}
+
+// this function is used to close the dropdown when clicking outside the dropdown
+document.addEventListener('click', function() {
+    document.querySelectorAll('.lang-dropdown.show').forEach(item => {
+        item.classList.remove('show');
+    });
+});
 </script>
+
 <script>
   // load theme, as early as possible
   (function() {
@@ -122,6 +142,25 @@ function toggleThemeListener() {
                 </button>
                 {{- end }}
             </span>
+            {{- if hugo.IsMultilingual }}
+            <span class="lang-switch">
+                <button class="lang-toggle" title="切换语言" onclick="toggleLangDropdown(event)">
+                    <svg class="lang-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path>
+                        <path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                </button>
+                <div class="lang-dropdown">
+                    {{- range $.AllTranslations }}
+                    <a href="{{ .Permalink }}" class="lang-item {{ if eq .Language.Lang $.Language.Lang }}active{{ end }}">
+                        <span class="lang-text">{{ .Language.LanguageName }}</span>
+                    </a>
+                    {{- end }}
+                </div>
+              </span>
+          {{- end }}
         </div>
         {{- $currentPage := . }}
         <ul id="menu">
